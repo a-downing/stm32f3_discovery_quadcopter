@@ -1,0 +1,11 @@
+#!/bin/bash
+
+expect << EOF
+spawn telnet localhost 4444
+expect -re ".*>"
+send "reset halt; flash write_image erase main.elf; reset run\n"
+expect -re ".*>"
+send "exit\n"
+EOF
+
+echo ""

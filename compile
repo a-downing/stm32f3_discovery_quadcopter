@@ -1,0 +1,20 @@
+#!/bin/bash
+
+#rm main.elf
+
+./pino.py --config=pino_config.py src/*.pino
+
+arm-none-eabi-g++ \
+-Iinclude/STM32F30x_DSP_StdPeriph_Lib_V1.0.0/Libraries/CMSIS/Include/ \
+-Iinclude/STM32F30x_DSP_StdPeriph_Lib_V1.0.0/Libraries/CMSIS/Device/ST/STM32F30x/Include/ \
+-mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 \
+-L/usr/arm-none-eabi/lib/armv7e-m/fpu/ \
+-L/usr/lib/gcc/arm-none-eabi/4.7.3/armv7e-m/fpu/ \
+-Tstm32f303vc_flash.ld \
+-fno-exceptions -fno-rtti \
+-fno-strict-aliasing \
+-ffunction-sections \
+-fdata-sections \
+-Wl,--gc-sections \
+-std=c++11 -Wall -pedantic -O2 -ggdb src/*.cpp src/*.c src/*.s \
+-o main.elf

@@ -1,0 +1,3 @@
+#!/bin/bash
+
+rm *~ src/*~ *.elf *.pyc usb_host/*.pyc 2>/dev/null

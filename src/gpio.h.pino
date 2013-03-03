@@ -1,0 +1,152 @@
+#ifndef GPIO_H
+#define GPIO_H
+
+#include "stm32f30x.h"
+#include "stm32f30x_bitmask.h"
+
+constexpr uint16_t _pindef(uint8_t port, uint8_t pin)
+{
+    return port << 8 | pin;
+}
+
+enum GPIOPort
+{
+    PA = 0,
+    PB,
+    PC,
+    PD,
+    PE,
+    PF
+};
+
+enum GPIOPin : uint16_t
+{
+    $(gpio_pins(['A', 'B', 'C', 'D', 'E', 'F'], range(0, 15 + 1)))
+};
+
+constexpr uint8_t _pin(GPIOPin pin)
+{
+    return uint16_t(pin) & 0xFF;
+}
+
+constexpr uint8_t _port(GPIOPin pin)
+{
+    return uint16_t(pin) >> 8;
+}
+
+enum GPIOMode
+{
+    IN = 0x0,
+    OUT = 0x1,
+    AF = 0x2,
+    ANALOG = 0x3
+};
+
+enum GPIOSpeed
+{
+    _2MHz = 0x0,
+    _10MHz = 0x1,
+    _50MHz = 0x3
+};
+
+enum GPIOOutputType
+{
+    PUSH_PULL = 0x0,
+    OPEN_DRAIN = 0x1
+};
+
+enum GPIOPullUpDown
+{
+    NONE = 0x0,
+    PULL_UP = 0x1,
+    PULL_DOWN = 0x2
+};
+
+enum AFNumber
+{
+    AF0=0, AF1, AF2, AF3,
+    AF4, AF5, AF6, AF7,
+    AF8, AF9, AF10, AF11,
+    AF12, AF13, AF14, AF15
+};
+
+class GPIO
+{
+    static constexpr GPIO_TypeDef * const gpio[6] = {GPIOA, GPIOB, GPIOC, GPIOD, GPIOE, GPIOF};
+
+public:
+    static void enable(GPIOPort port)
+    {
+        RCC->AHBENR |= 0x00020000 << int(port);
+    }
+
+    static void setSpeed(GPIOPin pin, GPIOSpeed speed)
+    {
+        gpio[_port(pin)]->OSPEEDR = (gpio[_port(pin)]->OSPEEDR & ~(0x3 << (_pin(pin) * 2))) | (uint32_t(speed) << (_pin(pin) * 2));
+    }
+
+    static void setMode(GPIOPin pin, GPIOMode mode)
+    {
+        gpio[_port(pin)]->MODER = (gpio[_port(pin)]->MODER & ~(0x3 << (_pin(pin) * 2))) | (uint32_t(mode) << (_pin(pin) * 2));
+    }
+
+    static void setOutputType(GPIOPin pin, GPIOOutputType otype)
+    {
+        gpio[_port(pin)]->OTYPER = (gpio[_port(pin)]->OTYPER & ~(0x3 << (_pin(pin) * 2))) | (uint32_t(otype) << (_pin(pin) * 2));
+    }
+
+    static void setPullUpDown(GPIOPin pin, GPIOPullUpDown pupd)
+    {
+        gpio[_port(pin)]->PUPDR = (gpio[_port(pin)]->PUPDR & ~(0x3 << (_pin(pin) * 2))) | (uint32_t(pupd) << (_pin(pin) * 2));
+    }
+
+    static void setAF(GPIOPin pin, AFNumber af)
+    {
+        gpio[_port(pin)]->AFR[(_pin(pin) < 8) ? 0 : 1] =
+            (gpio[_port(pin)]->AFR[(_pin(pin) < 8) ? 0 : 1] & ~(0xF << (_pin(pin) * 4)))
+            | (int(af) << (((_pin(pin) < 8) ? _pin(pin) : _pin(pin) - 8) * 4))
+        ;
+    }
+
+    static uint16_t read(GPIOPort port)
+    {
+        return gpio[int(port)]->IDR;
+    }
+
+    static uint8_t read(GPIOPin pin)
+    {
+        return (gpio[_port(pin)]->IDR >> _pin(pin)) & 0x1;
+    }
+
+    static void write(GPIOPort port, uint16_t val)
+    {
+        gpio[int(port)]->IDR = val;
+    }
+
+    static void write(GPIOPin pin, uint8_t val)
+    {
+        gpio[_port(pin)]->IDR = (gpio[_port(pin)]->IDR & ~(0x1 << _pin(pin))) | (val & 0x1);
+    }
+
+    static void set(GPIOPort port, uint16_t bits)
+    {
+        gpio[int(port)]->BSRR = bits;
+    }
+
+    static void clear(GPIOPort port, uint16_t bits)
+    {
+        gpio[int(port)]->BSRR = bits << 16;
+    }
+
+    static void set(GPIOPin pin)
+    {
+        gpio[_port(pin)]->BSRR = 1 << _pin(pin);
+    }
+
+    static void clear(GPIOPin pin)
+    {
+        gpio[_port(pin)]->BSRR = (1 << _pin(pin)) << 16;
+    }
+};
+
+#endif
