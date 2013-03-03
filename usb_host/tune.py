@@ -32,8 +32,8 @@ struct FlightSettings
     float servo_pulse_min_out = 0.001f;
     float servo_pulse_max_out = 0.002f;
 
-    float pitch_range = pi / 4.0f; // +/-45 deg
-    float roll_range = pi / 4.0f; // +/-45 deg
+    float pitch_range = pi / 12.0f; // +/-45 deg
+    float roll_range = pi / 12.0f; // +/-45 deg
     float yaw_range = pi * 2.0f; // +/- 360deg/s
 
     float throttle_max = 0.9f;
@@ -52,7 +52,7 @@ struct FlightSettings
 
 #write settings
 settings_struct = (
-    0x00000006, # zero gyro and accel
+    0x00000007, # zero gyro and accel
 	0.995,
 
 	0.001,
@@ -70,9 +70,9 @@ settings_struct = (
 
     0.0, 0.0, 0.0, 0.0,
 
-	1.0, 0.0, 0.0, 0.0,
-	1.0, 0.0, 0.0, 0.0,
-	0.1, 0.0, 0.0, 0.0,
+	0.0625, 0.0001, 0.0, 0.0,
+	0.0625, 0.0001, 0.0, 0.0,
+	0.00625, 0.0, 0.0, 0.0,
 
     0.0, 0.0, 0.0,
 

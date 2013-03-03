@@ -85,7 +85,7 @@ struct SensorData
 """
 
 # print out R/C reciever pulse widths
-#"""
+"""
 while True:
 	data = dev.read(0x82, 96, 0, timeout=1000)
 	floats = struct.unpack('24f', data)
@@ -110,33 +110,13 @@ while True:
 	ch4_period = floats[22]
 	ch4_pulse_width = floats[23]
 
-	print(yaw)
+	print(str(pitch) + ' ' + str(pitch_correct))
 
 	#os.system('clear')
 	#print('ch1: ' + str(ch1_period) + '\t\t' + str(ch1_pulse_width))
 	#print('ch2: ' + str(ch2_period) + '\t\t' + str(ch2_pulse_width))
 	#print('ch3: ' + str(ch3_period) + '\t\t' + str(ch3_pulse_width))
 	#print('ch4: ' + str(ch4_period) + '\t\t' + str(ch4_pulse_width))
-#"""
-
-sys.exit(0)
-
-"""
-# C++ settings structure
-float filt_c = 0.99f;
-
-float servo_pulse_min = 0.001f;
-float servo_pulse_max = 0.002f;
-
-float pitch_range = pi / 4.0f; // +/-45 deg
-float roll_range = pi / 4.0f; // +/-45 deg
-float yaw_range = pi * 2.0f; // +/- 360deg/s
-
-float throttle_max = 0.8f;
-
-PIDProperties pitch_prop;
-PIDProperties roll_prop;
-PIDProperties yaw_prop;
 """
 
 # pitch
@@ -145,11 +125,11 @@ angles = Angles(0, 0, 0)
 angles2 = Angles(0, 0, 0)
 estimate = Angles(0, 0, 0)
 while True:
-	data = dev.read(0x82, 68, 0, timeout=100)
-	floats = struct.unpack('<17f', data)
+	data = dev.read(0x82, 96, 0, timeout=1000)
+	floats = struct.unpack('24f', data)
 
 	dt = 1.0 / 380.0
-	c = 0.99
+	c = 0.995
 
 	gyro_delta = Angles(floats[0], floats[1], floats[2])
 	accel_vec = Vector3(floats[3], floats[4], floats[5])
@@ -161,7 +141,7 @@ while True:
 
 	pitch = floats[6]
 
-	print(str(angles.pitch) + ' ' + str(gyro_delta.pitch) + ' ' + str(accel_angles.pitch) + ' ' + str(angles2.pitch) + ' ' + str(pitch))
+	print(str(gyro_delta.pitch) + ' ' + str(accel_angles.pitch) + ' ' + str(angles2.pitch) + ' ' + str(pitch))
 #"""
 
 # roll

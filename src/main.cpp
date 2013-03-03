@@ -55,8 +55,8 @@ struct FlightSettings
     float servo_pulse_min_out = 0.001f;
     float servo_pulse_max_out = 0.002f;
 
-    float pitch_range = pi / 4.0f; // +/-45 deg
-    float roll_range = pi / 4.0f; // +/-45 deg
+    float pitch_range = pi / 12.0f; // +/-15 deg
+    float roll_range = pi / 12.0f; // +/-15 deg
     float yaw_range = pi * 2.0f; // +/- 360deg/s
 
     float throttle_max = 0.9f;
@@ -677,7 +677,7 @@ int main()
 
             // calibrate gyro
             g_telemetry.gyro -= g_settings.gyro_zero;
-            g_telemetry.gyro *= g_settings.accel_zero;
+            //g_telemetry.gyro *= g_settings.accel_zero;
 
             // calibrate accelerometer
             g_telemetry.accel *= g_settings.accel_zero;
