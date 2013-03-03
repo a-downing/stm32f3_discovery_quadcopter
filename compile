@@ -1,7 +1,5 @@
 #!/bin/bash
 
-#rm main.elf
-
 ./pino.py --config=pino_config.py src/*.pino
 
 arm-none-eabi-g++ \
